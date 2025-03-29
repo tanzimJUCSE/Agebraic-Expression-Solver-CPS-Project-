@@ -21,19 +21,19 @@ emnist_test  = datasets.EMNIST(root='./data', split='letters', train=False, down
 # We'll check both possibilities and filter accordingly.
 x_indices = []
 y_indices = []
+# for idx, (_, label) in enumerate(emnist_train):
+#     # If label 23 or 24 appear, collect indices. (We assume 0-indexed here for safety.)
+#     if label == 23:  # possibly 'x'
+#         x_indices.append(idx)
+#     elif label == 24:  # possibly 'y'
+#         y_indices.append(idx)
+# # If we didn't get any, adjust assuming 1-indexed labels in dataset (rare in Torch, but just in case).
+# if len(x_indices) == 0:
 for idx, (_, label) in enumerate(emnist_train):
-    # If label 23 or 24 appear, collect indices. (We assume 0-indexed here for safety.)
-    if label == 23:  # possibly 'x'
+    if label == 23+1:  # 24 if 'X' was 24 (1-indexed)
         x_indices.append(idx)
-    elif label == 24:  # possibly 'y'
+    elif label == 24+1:  # 25
         y_indices.append(idx)
-# If we didn't get any, adjust assuming 1-indexed labels in dataset (rare in Torch, but just in case).
-if len(x_indices) == 0:
-    for idx, (_, label) in enumerate(emnist_train):
-        if label == 23+1:  # 24 if 'X' was 24 (1-indexed)
-            x_indices.append(idx)
-        elif label == 24+1:  # 25
-            y_indices.append(idx)
 
 # Subset the EMNIST dataset for training and testing to only include those indices
 # We'll create new datasets by collecting the filtered data.
@@ -43,17 +43,17 @@ emnist_x_train_labels = [10]*len(x_indices)  # label 10 for 'x'
 emnist_y_train_labels = [11]*len(y_indices)  # label 11 for 'y'
 
 # Do the same for EMNIST test set
-x_indices_test = [idx for idx, (_, label) in enumerate(emnist_test) if label in (23, 24, 24+1, 25)]
+# x_indices_test = [idx for idx, (_, label) in enumerate(emnist_test) if label in (23, 24, 24+1, 25)]
 # (We'll reuse logic; in practice ensure it matches the train label scheme)
 emnist_x_test_data = []
 emnist_y_test_data = []
 emnist_x_test_labels = []
 emnist_y_test_labels = []
 for idx, (img, label) in enumerate(emnist_test):
-    if label == 23 or label == 24+1:  # 'x'
+    if label == 24:  # 'x'
         emnist_x_test_data.append(img)
         emnist_x_test_labels.append(10)
-    elif label == 24 or label == 25+1:  # 'y'
+    elif label == 25:  # 'y'
         emnist_y_test_data.append(img)
         emnist_y_test_labels.append(11)
 
